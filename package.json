@@ -1,0 +1,19 @@
+{
+  "name": "todolist",
+  "version": "1.0.0",
+  "description": "To do list",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/RalucaElisabetaR/to-do-list.git"
+  },
+  "author": "Raluca Elisabeta Rusu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RalucaElisabetaR/to-do-list/issues"
+  },
+  "homepage": "https://github.com/RalucaElisabetaR/to-do-list#readme"
+}
