@@ -1,7 +1,8 @@
 //jshint esversion:6
 
 const express = require('express')
-const bodyParser = require('body-parser')
+
+const mongoose = require('mongoose')
 // eslint-disable-next-line no-undef
 const date = require(__dirname + '/date.js')
 const app = express()
@@ -10,27 +11,61 @@ const items = []
 const workItems = []
 
 app.set('view engine', 'ejs')
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
 app.use(express.static('public'))
+
+mongoose.connect('mongodb://localhost:27017/todolistDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+
+const itemsSchema = {
+    name: String,
+}
+const Item = mongoose.model('Item', itemsSchema)
+
+const item1 = new Item({
+    name: 'Welcome to your To Do List!',
+})
+const item2 = new Item({
+    name: 'Hit the + button to add a new task.',
+})
+
+const item3 = new Item({
+    name: '<-- Hit this to delete a task.',
+})
+
+const defaulItems = [item1, item2, item3]
+//
 
 // new route
 app.get('/', (req, res) => {
     let day = date.getDate()
-    res.render('list', { listTitle: day, newListItems: items })
+    Item.find({}, (err, foundItems) => {
+        if (foundItems.length === 0) {
+            Item.insertMany(defaulItems, (err) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log('Successfully saved default items to DB')
+                }
+            })
+        } else {
+            res.render('list', { listTitle: day, newListItems: foundItems })
+        }
+    })
 })
+
 app.post('/', (req, res) => {
-    const item = req.body.newItem
+    const itemName = req.body.newItem
 
-    if (req.body.list == 'Work List') {
-        workItems.push(item)
-        res.redirect('/work')
-    } else {
-        items.push(item)
-
-        res.redirect('/')
-    }
+    const item = new Item({
+        name: itemName,
+    })
+    item.save()
+    res.redirect('/')
 })
-
 // new route
 
 app.get('/work', (req, res) => {
