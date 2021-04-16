@@ -3,6 +3,7 @@
 const express = require('express')
 
 const mongoose = require('mongoose')
+
 // eslint-disable-next-line no-undef
 const date = require(__dirname + '/date.js')
 const app = express()
@@ -18,6 +19,9 @@ app.use(express.static('public'))
 mongoose.connect('mongodb://localhost:27017/todolistDB', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    keepAlive: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
 })
 
 const itemsSchema = {
@@ -42,6 +46,7 @@ const defaulItems = [item1, item2, item3]
 // new route
 app.get('/', (req, res) => {
     let day = date.getDate()
+
     Item.find({}, (err, foundItems) => {
         if (foundItems.length === 0) {
             Item.insertMany(defaulItems, (err) => {
@@ -51,6 +56,7 @@ app.get('/', (req, res) => {
                     console.log('Successfully saved default items to DB')
                 }
             })
+            res.redirect('/')
         } else {
             res.render('list', { listTitle: day, newListItems: foundItems })
         }
@@ -66,6 +72,19 @@ app.post('/', (req, res) => {
     item.save()
     res.redirect('/')
 })
+
+// new route
+
+app.post('/delete', (req, res) => {
+    const checkedItemId = req.body.checkbox
+    Item.findByIdAndRemove(checkedItemId, (err) => {
+        if (!err) {
+            console.log('Successfully deleted checked item.')
+            res.redirect('/')
+        }
+    })
+})
+
 // new route
 
 app.get('/work', (req, res) => {
