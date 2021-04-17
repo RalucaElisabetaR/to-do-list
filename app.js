@@ -3,7 +3,7 @@
 const express = require('express')
 
 const mongoose = require('mongoose')
-
+const _ = require('lodash')
 // eslint-disable-next-line no-undef
 
 const app = express()
@@ -70,7 +70,7 @@ app.get('/', (req, res) => {
     })
 })
 app.get('/:customListName', (req, res) => {
-    const customListName = req.params.customListName
+    const customListName = _.capitalize(req.params.customListName)
 
     List.findOne({ name: customListName }, (err, foundList) => {
         if (!err) {
@@ -115,12 +115,26 @@ app.post('/', (req, res) => {
 
 app.post('/delete', (req, res) => {
     const checkedItemId = req.body.checkbox
-    Item.findByIdAndRemove(checkedItemId, (err) => {
-        if (!err) {
-            console.log('Successfully deleted checked item.')
-            res.redirect('/')
-        }
-    })
+    const listName = req.body.listName
+
+    if (listName === 'Today') {
+        Item.findByIdAndRemove(checkedItemId, (err) => {
+            if (!err) {
+                console.log('Successfully deleted checked item.')
+                res.redirect('/')
+            }
+        })
+    } else {
+        List.findOneAndUpdate(
+            { name: listName },
+            { $pull: { items: { _id: checkedItemId } } },
+            (err, foundList) => {
+                if (!err) {
+                    res.redirect('/' + listName)
+                }
+            }
+        )
+    }
 })
 
 // new route
