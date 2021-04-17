@@ -5,7 +5,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 
 // eslint-disable-next-line no-undef
-const date = require(__dirname + '/date.js')
+
 const app = express()
 
 const items = []
@@ -40,16 +40,20 @@ const item3 = new Item({
     name: '<-- Hit this to delete a task.',
 })
 
-const defaulItems = [item1, item2, item3]
-//
+const defaultItems = [item1, item2, item3]
+
+const listSchema = {
+    name: String,
+    items: [itemsSchema],
+}
+
+const List = mongoose.model('List', listSchema)
 
 // new route
 app.get('/', (req, res) => {
-    let day = date.getDate()
-
     Item.find({}, (err, foundItems) => {
         if (foundItems.length === 0) {
-            Item.insertMany(defaulItems, (err) => {
+            Item.insertMany(defaultItems, (err) => {
                 if (err) {
                     console.log(err)
                 } else {
@@ -58,19 +62,53 @@ app.get('/', (req, res) => {
             })
             res.redirect('/')
         } else {
-            res.render('list', { listTitle: day, newListItems: foundItems })
+            res.render('list', {
+                listTitle: 'Today',
+                newListItems: foundItems,
+            })
         }
     })
 })
+app.get('/:customListName', (req, res) => {
+    const customListName = req.params.customListName
 
+    List.findOne({ name: customListName }, (err, foundList) => {
+        if (!err) {
+            if (!foundList) {
+                // create new list
+                const list = new List({
+                    name: customListName,
+                    items: defaultItems,
+                })
+                list.save()
+                res.redirect('/' + customListName)
+            } else {
+                // show existing list
+                res.render('list', {
+                    listTitle: foundList.name,
+                    newListItems: foundList.items,
+                })
+            }
+        }
+    })
+})
 app.post('/', (req, res) => {
     const itemName = req.body.newItem
+    const listName = req.body.list
 
     const item = new Item({
         name: itemName,
     })
-    item.save()
-    res.redirect('/')
+    if (listName === 'Today') {
+        item.save()
+        res.redirect('/')
+    } else {
+        List.findOne({ name: listName }, (err, foundList) => {
+            foundList.items.push(item)
+            foundList.save()
+            res.redirect('/' + listName)
+        })
+    }
 })
 
 // new route
@@ -87,15 +125,15 @@ app.post('/delete', (req, res) => {
 
 // new route
 
-app.get('/work', (req, res) => {
-    res.render('list', { listTitle: 'Work List', newListItems: workItems })
-})
-app.post('/work', (req, res) => {
-    const item = req.body.newItem
+// app.get('/work', (req, res) => {
+//     res.render('list', { listTitle: 'Work List', newListItems: workItems })
+// })
+// app.post('/work', (req, res) => {
+//     const item = req.body.newItem
 
-    workItems.push(item)
-    res.redirect('/work')
-})
+//     workItems.push(item)
+//     res.redirect('/work')
+// })
 // new route
 app.get('/about', (req, res) => {
     res.render('about')
