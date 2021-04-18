@@ -18,9 +18,7 @@ app.use(express.static('public'))
 const apiKey = process.env.API_KEY
 
 mongoose.connect(
-    `mongodb+srv://admin-raluca:` +
-        apiKey +
-        `@cluster0.myknc.mongodb.net/todolistDB`,
+    `mongodb+srv://admin-raluca:${apiKey}@cluster0.myknc.mongodb.net/todolistDB`,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true,
