@@ -7,10 +7,8 @@ const _ = require('lodash')
 // eslint-disable-next-line no-undef
 const dotenv = require('dotenv').config()
 const app = express()
-
 const items = []
 const workItems = []
-
 app.set('view engine', 'ejs')
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
@@ -28,7 +26,6 @@ mongoose.connect(
         useFindAndModify: false,
     }
 )
-
 const itemsSchema = {
     name: String,
 }
@@ -40,18 +37,14 @@ const item1 = new Item({
 const item2 = new Item({
     name: 'Hit the + button to add a new task.',
 })
-
 const item3 = new Item({
     name: '<-- Hit this to delete a task.',
 })
-
 const defaultItems = [item1, item2, item3]
-
 const listSchema = {
     name: String,
     items: [itemsSchema],
 }
-
 const List = mongoose.model('List', listSchema)
 
 // new route
@@ -141,18 +134,6 @@ app.post('/delete', (req, res) => {
         )
     }
 })
-
-// new route
-
-// app.get('/work', (req, res) => {
-//     res.render('list', { listTitle: 'Work List', newListItems: workItems })
-// })
-// app.post('/work', (req, res) => {
-//     const item = req.body.newItem
-
-//     workItems.push(item)
-//     res.redirect('/work')
-// })
 // new route
 app.get('/about', (req, res) => {
     res.render('about')
