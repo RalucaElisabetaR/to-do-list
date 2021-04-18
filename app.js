@@ -5,7 +5,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const _ = require('lodash')
 // eslint-disable-next-line no-undef
-
+const dotenv = require('dotenv').config()
 const app = express()
 
 const items = []
@@ -15,14 +15,20 @@ app.set('view engine', 'ejs')
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static('public'))
+const apiKey = process.env.API_KEY
 
-mongoose.connect('mongodb://localhost:27017/todolistDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    keepAlive: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-})
+mongoose.connect(
+    `mongodb+srv://admin-raluca:` +
+        apiKey +
+        `@cluster0.myknc.mongodb.net/todolistDB`,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        keepAlive: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+    }
+)
 
 const itemsSchema = {
     name: String,
