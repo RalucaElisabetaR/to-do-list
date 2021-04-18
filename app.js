@@ -159,6 +159,10 @@ app.get('/about', (req, res) => {
     res.render('about')
 })
 
-app.listen(2000, () => {
-    console.log('Server started at port 2000')
+let port = process.env.PORT
+if (port == null || port == '') {
+    port = 2000
+}
+app.listen(port, () => {
+    console.log('Server has started successfully')
 })

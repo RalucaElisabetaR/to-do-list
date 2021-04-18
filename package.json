@@ -12,6 +12,9 @@
     },
     "author": "Raluca Elisabeta Rusu",
     "license": "ISC",
+    "engines": {
+        "node": "15.14.0"
+    },
     "bugs": {
         "url": "https://github.com/RalucaElisabetaR/to-do-list/issues"
     },
