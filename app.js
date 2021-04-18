@@ -13,10 +13,11 @@ app.set('view engine', 'ejs')
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static('public'))
-const apiKey = process.env.API_KEY
 
 mongoose.connect(
-    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.myknc.mongodb.net/todolistDB`,
+    `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.myknc.mongodb.net/todolistDB?retryWrites=true&w=majority
+
+`,
 
     {
         useNewUrlParser: true,
