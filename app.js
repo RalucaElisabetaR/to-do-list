@@ -16,17 +16,13 @@ app.use(express.static('public'))
 
 mongoose.connect(
     `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.myknc.mongodb.net/todolistDB?retryWrites=true&w=majority
-
 `,
-
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        keepAlive: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
+    (err) => {
+        if (err) throw err
+        console.log('DB Connected Successfully')
     }
 )
+
 const itemsSchema = {
     name: String,
 }
